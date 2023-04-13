@@ -1,4 +1,8 @@
 import json
+import sys
+import os
+
+sys.path.append(os.path.join('fixtures/tests_data.json'))
 
 import sqlalchemy
 from sqlalchemy.orm import sessionmaker
@@ -14,7 +18,7 @@ if __name__ == '__main__':
 	Session = sessionmaker(bind=engine)
 	session = Session()
 		
-	with open('fixtures/tests_data.json', 'r') as fd:
+	with open('C:/Users/Пользователь/Desktop/homework/Python and bd. ORM/fixtures/tests_data.json', 'r') as fd:
 		data = json.load(fd)
 		
 	for record in data:
