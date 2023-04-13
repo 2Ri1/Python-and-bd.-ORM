@@ -1,11 +1,7 @@
-import sqlalchemy
 import sqlalchemy as sq
-from sqlalchemy.orm import declarative_base, relationship, sessionmaker
+from sqlalchemy.orm import declarative_base, relationship
 
 Base = declarative_base()
-
-def create_tables(engine):
-	Base.metadata.create_all(engine)
 
 class Publisher(Base):
     __tablename__ = "publisher"
@@ -68,3 +64,7 @@ class Sale(Base):
 
     def __str__(self):
          return f'{self.id} : {self.price} : {self.date_sale} : {self.id_stockr} : {self.count}'
+    
+def create_tables(engine):
+	Base.metadata.drop_all(engine)
+	Base.metadata.create_all(engine)

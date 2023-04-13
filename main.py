@@ -1,14 +1,13 @@
 import json
 
 import sqlalchemy
-import sqlalchemy as sq
-from sqlalchemy.orm import declarative_base, relationship, sessionmaker
+from sqlalchemy.orm import sessionmaker
 
 from models import create_tables, Publisher, Shop, Book, Stock, Sale
 
 if __name__ == '__main__':
 	
-	DSN = "postgresql://postgres:parol@localhost:5432/hw"
+	DSN = "postgresql://postgres:kubik2103@localhost:5432/hw"
 	engine = sqlalchemy.create_engine(DSN)
 	create_tables(engine)
 	
@@ -33,26 +32,27 @@ if __name__ == '__main__':
 				        'sale': Sale,    
 		}[record.get('model')]
 		session.add(model(id=record.get('pk'), **record.get('fields')))
-		
+	session.commit()
+	session.close()
+
 	your_request = int(input('Введите 1, если хотите задать поиск по имени автора\n Введите 0, еслт хотите задать поиск по идентификатору издателя:'))
 	
 	if your_request == 1:
-		your_request_1 = input('Введите имя автора:')
-		q = session.query(publisher).join(book.course).filter(publisher.name == your_request_1)
-		q = q.stock()
-		q = q.shop()
-		q = q.sale()
-		print(q)
-		for s in q.all():
-			print("\t"f"{book.title} | {shop.name} | {sale.price} | {sale.date_sale}")
+		your_request_1 = Publisher.name == input('Введите имя автора:')
+	q = session.query(Book.title, Shop.name, Sale.price, Sale.count, Sale.date_sale).\
+    join(Publisher).join(Stock).join(Sale).join(Shop).\
+	filter(your_request_1).order_by(Sale.date_sale)
+	print(q)
+	for book, shop, price, count, date in q:
+		print("\t"f'{book:<40} | {shop:<10} | {price*count:<8} | {date}')
+	
 	else:
-		your_request_2 = input('Введите id автора:')
-		q = session.query(publisher).join(book.course).filter(publisher.id == your_request_2)
-		q = q.stock()
-		q = q.shop()
-		q = q.sale()
-		print(q)
-		for s in q.all():
-			print("\t"f"{book.title} | {shop.name} | {sale.price} | {sale.date_sale}")
+		your_request_2 = Publisher.id == input('Введите id автора:')
+	q = session.query(Book.title, Shop.name, Sale.price, Sale.count, Sale.date_sale).\
+    join(Publisher).join(Stock).join(Sale).join(Shop).\
+	filter(your_request_1).order_by(Sale.date_sale)
+	print(q)
+	for book, shop, price, count, date in q:
+		print("\t"f'{book:<40} | {shop:<10} | {price*count:<8} | {date}')
 			
 	session.commit()
